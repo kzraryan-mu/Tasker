@@ -1,0 +1,1 @@
+UPDATE enrollment SET transmissionStatusId = 3, transmissionStatusDate = getdate() where enrollmentid in ();
