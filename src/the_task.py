@@ -18,7 +18,7 @@ with pyodbc.connect('DSN={}'.format(dsn)) as connection:
     # updating database by comparing source and destination file
     source_df = pd.read_csv(source_file, sep='\t', dtype=str)
     source_df.head()
-    destination_df = pd.read_csv(destination_file, sep='\t', dtype=str)
+    destination_df = pd.read_csv(destination_file, sep='\t', dtype=str, names=cols)
     output0 = pd.merge(
         destination_df
         , source_df
@@ -29,9 +29,9 @@ with pyodbc.connect('DSN={}'.format(dsn)) as connection:
     ).dropna(subset=['CLASS_NBR', 'EMPLID'])
     destination_df_2 = output0[output0['_merge'] == 'left_only']
     destination_df_2[cols].to_csv(updated_file, sep='\t', index=False, header=False)
-    if destination_df_2.count > 0:
+    if destination_df_2.size > 0:
         class_nbr_emplid = []
-        for index, row in output0.iterrows():
+        for index, row in destination_df_2.iterrows():
             class_nbr_emplid.append(row['CLASS_NBR'] + '_' + row['EMPLID'])
         str_class_nbr_emplid = "','".join(class_nbr_emplid)
         with open(update_query_file, 'r') as f:
